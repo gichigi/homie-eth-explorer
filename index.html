@@ -352,6 +352,7 @@
           if (validateInput(searchValue)) {
             // Valid input - show loading animation
             loader.style.display = 'block';
+            console.log("Valid input detected! Format matches validation patterns.");
             
             // This is just a demo, so we're simulating a search
             // In a real app, you would make API calls here
@@ -362,6 +363,7 @@
             // Invalid input - show error message
             errorMessage.textContent = getRandomErrorMessage();
             errorMessage.style.display = 'block';
+            console.log("Invalid input detected! Showing error message.");
           }
         }
       });
