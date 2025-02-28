@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homie | Ethereum Block Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;500;600&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'IBM Plex Sans', sans-serif;
+    }
+    
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+      padding: 2rem;
+      color-scheme: dark;
+    }
+    
+    .container {
+      text-align: center;
+      max-width: 800px;
+      width: 100%;
+    }
+    
+    h1 {
+      font-size: 5.5rem;
+      margin-bottom: 2rem;
+      color: white;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      position: relative;
+      padding-bottom: 0.25rem;
+    }
+
+    h1 span {
+      display: inline-block;
+      background: linear-gradient(90deg, #f9fafb, #e2e8f0);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      position: relative;
+      word-spacing: 0.05em;
+    }
+
+    h1 {
+      transition: text-shadow 0.25s ease;
+    }
+    
+    h1 span {
+      transition: all 0.25s ease;
+    }
+    
+    h1:hover {
+      text-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.5),
+        0 0 20px rgba(255, 255, 255, 0.3),
+        0 0 30px rgba(59, 130, 246, 0.3);
+    }
+    
+    h1:hover span {
+      background: linear-gradient(90deg, #ffffff, #f3f4f6);
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+    
+    .search-container {
+      position: relative;
+      margin-bottom: 2rem;
+      margin-top: 0.5rem;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 1.5rem 2rem;
+      border-radius: 4px;
+      border: 2px solid transparent;
+      font-size: 1rem;
+      font-family: 'IBM Plex Mono', monospace;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: #355c7d;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .connect-btn {
+      background: linear-gradient(90deg, #111827, #000000);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .connect-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: 0.5s;
+    }
+    
+    .connect-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 25px rgba(37, 99, 235, 0.4);
+    }
+    
+    .connect-btn:hover::before {
+      left: 100%;
+    }
+    
+    .or-separator {
+      margin: 1.5rem 0;
+      position: relative;
+      text-align: center;
+    }
+    
+    .or-separator::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 1;
+    }
+    
+    .or-separator span {
+      display: inline-block;
+      padding: 0 1rem;
+      background: #1e293b;
+      color: #94a3b8;
+      position: relative;
+      z-index: 2;
+      font-size: 1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .logo {
+      margin-bottom: 1.5rem;
+    }
+    
+    .eth-logo {
+      width: 60px;
+      height: 100px;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+      animation: float 3s ease-in-out infinite;
+      transform-origin: center center;
+    }
+    
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+    
+    .loader {
+      display: none;
+      margin: 2rem auto;
+      width: 120px;
+      height: 60px;
+      position: relative;
+    }
+    
+    .loader-hex {
+      position: absolute;
+      width: 20px;
+      height: 35px;
+      background-color: white;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      opacity: 0;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    .loader-hex:nth-child(1) {
+      left: 0;
+      animation-delay: 0s;
+    }
+    
+    .loader-hex:nth-child(2) {
+      left: 25px;
+      animation-delay: 0.2s;
+    }
+    
+    .loader-hex:nth-child(3) {
+      left: 50px;
+      animation-delay: 0.4s;
+    }
+    
+    .loader-hex:nth-child(4) {
+      left: 75px;
+      animation-delay: 0.6s;
+    }
+    
+    .loader-hex:nth-child(5) {
+      left: 100px;
+      animation-delay: 0.8s;
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 784.37 1277.39" class="eth-logo">
+        <path fill="#fff" d="M392.07 0l-8.57 29.11v844.63l8.57 8.55 392.06-231.75z"/>
+        <path fill="#fff" d="M392.07 0L0 650.54l392.07 231.75V472.33z" opacity="0.6"/>
+        <path fill="#fff" d="M392.07 956.52l-4.83 5.89v300.87l4.83 14.1 392.3-552.49z" opacity="0.6"/>
+        <path fill="#fff" d="M392.07 1277.38V956.52L0 724.89z"/>
+        <path fill="#fff" d="M392.07 882.29l392.06-231.75-392.06-178.21z" opacity="0.2"/>
+        <path fill="#fff" d="M0 650.54l392.07 231.75V472.33z" opacity="0.6"/>
+      </svg>
+    </div>
+    <h1><span>Hey, Homie</span></h1>
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="Search by ETH address, ENS, transaction hash, or block..." id="searchInput">
+    </div>
+    <div class="or-separator">
+      <span>or</span>
+    </div>
+    <button class="connect-btn" id="connectBtn">Connect Wallet</button>
+    
+    <div class="loader" id="loader">
+      <div class="loader-hex"></div>
+      <div class="loader-hex"></div>
+      <div class="loader-hex"></div>
+      <div class="loader-hex"></div>
+      <div class="loader-hex"></div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('searchInput');
+      const loader = document.getElementById('loader');
+      const connectBtn = document.getElementById('connectBtn');
+      
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && searchInput.value.trim() !== '') {
+          // Show loading animation
+          loader.style.display = 'block';
+          
+          // This is just a demo, so we're simulating a search
+          // In a real app, you would make API calls here
+          setTimeout(() => {
+            loader.style.display = 'none';
+          }, 3000);
+        }
+      });
+      
+      connectBtn.addEventListener('click', () => {
+        connectBtn.textContent = 'Connected';
+        connectBtn.style.background = 'linear-gradient(90deg, #064e3b, #047857)';
+      });
+    });
+  </script>
+</body>
+</html>
