@@ -191,6 +191,20 @@
       position: relative;
     }
     
+    .error-message {
+      display: none;
+      margin: 1rem auto;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      max-width: 500px;
+      line-height: 1.4;
+      padding: 1rem;
+      background-color: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      transition: opacity 0.3s ease;
+    }
+    
     .loader-hex {
       position: absolute;
       width: 20px;
@@ -266,24 +280,89 @@
       <div class="loader-hex"></div>
       <div class="loader-hex"></div>
     </div>
+    <div class="error-message" id="errorMessage"></div>
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const searchInput = document.getElementById('searchInput');
       const loader = document.getElementById('loader');
+      const errorMessage = document.getElementById('errorMessage');
       const connectBtn = document.getElementById('connectBtn');
       
+      // Validation patterns
+      const patterns = {
+        ethAddress: /^0x[a-fA-F0-9]{40}$/,
+        ensName: /^[a-zA-Z0-9-]+\.eth$/,
+        txHash: /^0x[a-fA-F0-9]{64}$/,
+        blockNumber: /^\d+$/
+      };
+      
+      // Fun error messages
+      const errorMessages = [
+        "Yo homie, that doesn't look like a valid address. Did you ape into the wrong input?",
+        "NGMI with that format. Try an ETH address, ENS, tx hash, or block number.",
+        "Even a degen would format better than that. Check what you're entering.",
+        "Ser, this is not the way. Your input is more rekt than my last leverage trade.",
+        "Looks like your input is down bad. Need a valid ETH address, ENS, tx, or block.",
+        "This ain't it, chief. Are you sure you're not still on the testnet?",
+        "Bruh... what are you trying to search? That's more confusing than EIP-1559.",
+        "Frens don't let frens search with invalid formats. Try again?",
+        "Paper hands detected! That's not a valid search query.",
+        "You're in the wrong neighborhood with that input. Get it together, homie.",
+        "Diamond hands, paper inputs. Give me something I can work with.",
+        "Sheesh! That input is as volatile as SHIB. Try a proper format.",
+        "My brother in Christ, that's not a valid ETH address, ENS, tx, or block.",
+        "We can't all be Vitalik, but we can all format our searches correctly.",
+        "Straight to the shadow realm with that input. Try again?",
+        "Gm. Gn. That's not a valid input though.",
+        "This ain't the flippening we're looking for. Check your format.",
+        "Anon, I'm gonna need you to fix that input format. We're not savages.",
+        "The gas fees on that search would be astronomical. Try a valid format.",
+        "I've seen better formatting in a Discord pump group. Let's try again."
+      ];
+      
+      function getRandomErrorMessage() {
+        const randomIndex = Math.floor(Math.random() * errorMessages.length);
+        return errorMessages[randomIndex];
+      }
+      
+      function validateInput(input) {
+        if (patterns.ethAddress.test(input)) return true;
+        if (patterns.ensName.test(input)) return true;
+        if (patterns.txHash.test(input)) return true;
+        if (patterns.blockNumber.test(input)) return true;
+        return false;
+      }
+      
       searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && searchInput.value.trim() !== '') {
-          // Show loading animation
-          loader.style.display = 'block';
+        if (e.key === 'Enter') {
+          const searchValue = searchInput.value.trim();
           
-          // This is just a demo, so we're simulating a search
-          // In a real app, you would make API calls here
-          setTimeout(() => {
-            loader.style.display = 'none';
-          }, 3000);
+          // Hide previous error if any
+          errorMessage.style.display = 'none';
+          loader.style.display = 'none';
+          
+          if (searchValue === '') {
+            errorMessage.textContent = "C'mon homie, you gotta enter something!";
+            errorMessage.style.display = 'block';
+            return;
+          }
+          
+          if (validateInput(searchValue)) {
+            // Valid input - show loading animation
+            loader.style.display = 'block';
+            
+            // This is just a demo, so we're simulating a search
+            // In a real app, you would make API calls here
+            setTimeout(() => {
+              loader.style.display = 'none';
+            }, 3000);
+          } else {
+            // Invalid input - show error message
+            errorMessage.textContent = getRandomErrorMessage();
+            errorMessage.style.display = 'block';
+          }
         }
       });
       
